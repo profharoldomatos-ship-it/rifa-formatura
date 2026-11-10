@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rifa Formatura de Ádria Lorena</title>
+<meta name="description" content="Escolha seus números da rifa da formatura de Ádria Lorena. Prêmio: 1 diária de serviços da FestVal.">
+<meta name="theme-color" content="#0F0E18">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: uma coluna de celular (máx. 480px), abas fixas no topo, barra de ação fixa embaixo. Visual noturno de festa, tema único escuro. */
+:root{
+  --bg:#14121F; --bg-deep:#0F0E18; --surface:#1B1929; --surface-2:#221F33; --line:#3A3652; --line-strong:#5A5577;
+  --fg:#F3F1FA; --fg-2:#D6D2E6; --muted:#B3AEC8;
+  --accent:#FF4FA3; --accent-soft:#FF9FCB; --on-accent:#1A0A14;
+  --warn:#F5B84B; --warn-bg:#3D3013; --on-warn:#2A1D05;
+  --ok:#9BE7AE; --ok-bg:#233A2A; --on-ok:#0C2414;
+  --danger:#FFB4A8; --danger-bg:#4A1D1D;
+  --sold-bg:#0B0A12; --sold-fg:#8C88A0;
+  --display:'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --body:Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg-deep)}
+button,input,select{font-family:inherit;font-size:16px}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed}
+:focus-visible{outline:3px solid var(--accent-soft);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+p{margin:0}
+.wrap{max-width:480px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 120px;display:flex;flex-direction:column;gap:20px}
+
+/* barra superior */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg-deep);border-bottom:1px solid var(--line)}
+.top-in{max-width:480px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px;display:flex;flex-direction:column;gap:10px}
+.demo{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--warn)}
+.demo b{letter-spacing:.08em;text-transform:uppercase}
+.tabs{display:flex;gap:6px;overflow-x:auto}
+.tab{flex:1 0 auto;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--fg-2);font-size:14px;font-weight:600}
+.tab[aria-current="page"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.tab.adm{border-style:dashed}
+
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--surface-2);border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13px;padding:6px 12px;border-radius:999px;background:#2E2A45;color:#E4E0F2}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stat{background:var(--surface);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat span{font-size:12px;color:var(--muted)}
+.stat strong{font-size:17px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--fg-2)}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.n{height:52px;border-radius:12px;font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;background:var(--surface-2);color:var(--fg);border:1px solid var(--line-strong);transition:transform .08s}
+.n:active{transform:scale(.95)}
+.n.seu{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:800}
+.n.res{background:var(--warn);color:var(--on-warn);border-color:var(--warn)}
+.n.pago{background:var(--sold-bg);color:var(--sold-fg);border:1px dashed #4A465E;text-decoration:line-through}
+.n.win{background:var(--ok);color:var(--on-ok);border-color:var(--ok);font-weight:800;text-decoration:none}
+
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+.bar-in{max-width:480px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:14px;display:flex;align-items:center;gap:14px}
+.bar-in .sum{flex:1;display:flex;flex-direction:column;min-width:0}
+.bar-in .sum span{font-size:13px;color:var(--muted)}
+.bar-in .sum strong{font-size:20px;font-variant-numeric:tabular-nums}
+
+.btn{min-height:52px;padding:0 20px;border-radius:16px;border:none;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:disabled{opacity:.4}
+.btn.full{width:100%}
+.btn.ghost{background:transparent;color:var(--accent-soft);border:1px solid var(--accent)}
+.btn.plain{background:transparent;color:var(--fg-2);border:1px solid var(--line-strong)}
+.btn.ok{background:var(--ok);color:var(--on-ok)}
+.btn.sm{min-height:44px;padding:0 14px;font-size:14px;border-radius:12px}
+.link{background:none;border:none;color:var(--accent-soft);font-weight:600;padding:10px 0;min-height:44px}
+
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:14px;font-weight:600}
+.field input,.field select{height:52px;border-radius:14px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);padding:0 14px;width:100%;min-width:0}
+.field .hint{font-size:13px;color:var(--muted)}
+.field .err{font-size:13px;color:var(--danger)}
+.row{display:flex;gap:8px;align-items:stretch}
+.row > *{min-width:0}
+
+.notice{display:flex;gap:10px;align-items:flex-start;background:#2A2210;border-radius:14px;padding:12px 14px;font-size:14px;color:#F6DDA8}
+.notice.ok{background:var(--ok-bg);color:var(--ok)}
+.pill{font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;white-space:nowrap}
+.pill.res{background:var(--warn-bg);color:var(--warn)}
+.pill.late{background:var(--danger-bg);color:var(--danger)}
+.pill.pago{background:var(--ok-bg);color:var(--ok)}
+.mini{padding:6px 10px;border-radius:10px;background:var(--warn);color:var(--on-warn);font-weight:700;font-variant-numeric:tabular-nums}
+.mini.pago{background:var(--ok);color:var(--on-ok)}
+.mini.seu{background:var(--accent);color:var(--on-accent);font-size:18px;min-width:52px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:12px}
+
+.item{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.item-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.item-h > div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.item-h strong{font-size:16px;overflow-wrap:anywhere}
+.item-h span.sub{font-size:13px;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions .btn{flex:1 1 auto}
+
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kpi{background:var(--surface);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:2px}
+.kpi span{font-size:13px;color:var(--muted)}
+.kpi strong{font-size:24px;font-variant-numeric:tabular-nums}
+.kpi small{font-size:12px}
+.meter{grid-column:span 2;background:var(--surface);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.meter .track{height:10px;border-radius:999px;background:#2E2A45;display:flex;overflow:hidden}
+.meter .track span{display:block;height:100%}
+.meter .lab{display:flex;justify-content:space-between;font-size:13px;color:var(--fg-2)}
+
+.set{background:var(--surface);border-radius:18px;display:flex;flex-direction:column}
+.set > div{padding:14px;border-bottom:1px solid #2E2A45;display:flex;flex-direction:column;gap:10px}
+.set > div:last-child{border-bottom:none}
+
+.draw{border-radius:24px;padding:26px 20px;background:var(--surface-2);border:1px solid var(--accent);display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.draw .big{font-family:var(--display);font-size:96px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
+.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;background:var(--surface);padding:4px;border-radius:14px}
+.seg button{min-height:44px;border-radius:10px;border:none;background:transparent;color:var(--fg-2);font-size:14px;font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.empty{font-size:14px;color:var(--muted);text-align:center;padding:16px;border:1px dashed var(--line);border-radius:14px}
+.prize-acts{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.prize-acts .btn{width:100%}
+details.more{border:1px solid var(--line-strong);border-radius:14px;background:var(--surface)}
+details.more summary{list-style:none;min-height:48px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:600;color:var(--fg);cursor:pointer}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary svg{transition:transform .2s;flex-shrink:0}
+details.more[open] summary svg{transform:rotate(180deg)}
+details.more .txt{padding:0 16px 16px;color:var(--fg-2);white-space:pre-line;max-width:65ch}
+.viewer{position:fixed;inset:0;z-index:30;background:var(--bg-deep);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.viewer-top{max-width:480px;width:100%;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.viewer-img{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px max(16px,env(safe-area-inset-left,0px))}
+.viewer-img img{max-width:100%;max-height:100%;object-fit:contain;border-radius:16px}
+.viewer-cap{max-width:480px;width:100%;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 20px;display:flex;flex-direction:column;gap:12px}
+.thumb{width:100%;max-height:200px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+textarea.ta{min-height:120px;border-radius:14px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);padding:12px 14px;font:inherit;resize:vertical;width:100%}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:600;font-size:14px;z-index:20;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+body{margin:0}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <nav class="tabs" aria-label="Seções">
+      <button class="tab" data-go="grid">Números</button>
+      <button class="tab" data-go="meus">Meus números</button>
+      <button class="tab" data-go="resultado">Resultado</button>
+      <button class="tab adm" data-go="admin">Administração</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="app"><div class="empty" style="margin-top:40px">Carregando a rifa…</div></main>
+<div id="barSlot"></div>
+<div id="viewerSlot"></div>
+<div id="toastSlot"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+const H = 3600000;
+let S = { config:null, mapa:{}, sorteio:null, reservas:[], agora:Date.now(), skew:0 };
+const ui = { view:'grid', sel:new Set(), lastRes:null, admin:false, senha:'', confirm:null, metodo:'vivo', rolling:null,
+  lookup:'', lookupRes:null, formErr:{}, loteria:'', busy:false, fotos:null, fotoCache:{}, fotoIdx:0 };
+
+/* ---------- utilidades ---------- */
+const now = () => Date.now() + S.skew;
+const pad = n => (S.config && S.config.total > 100 ? String(n).padStart(3,'0') : String(n).padStart(2,'0'));
+const brl = v => 'R$ ' + Number(v).toFixed(2).replace('.', ',');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const digits = s => String(s == null ? '' : s).replace(/\D/g,'');
+const fmtZap = z => { const d = digits(z); return d.length===11 ? '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7) : d.length===10 ? '('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6) : d; };
+const fmtDate = ms => new Date(ms).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+const msgErro = e => String((e && e.message) || e).replace(/^(Exception|Error|Exceção):\s*/,'');
+
+/* Endereço do robô no Google (URL do app da Web, termina em /exec) */
+const API_URL = 'https://script.google.com/macros/s/AKfycbw5ozgYKqEj_WN8V7sXSITFDalmphbWtX4MPwGPUF-NZU6E5GycqJ47StVQSargtjXvsg/exec';
+function call(fn, ...args){
+  if(window.google && google.script && google.script.run){
+    return new Promise((ok, fail) => google.script.run.withSuccessHandler(ok).withFailureHandler(fail)[fn](...args));
+  }
+  return fetch(API_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args }) })
+    .then(r => r.json())
+    .then(j => j.ok ? j.data : Promise.reject(new Error(j.erro)));
+}
+function aplicar(d){
+  S.config = d.config; S.mapa = d.mapa || {}; S.sorteio = d.sorteio; S.skew = d.agora - Date.now();
+  if(d.reservas) S.reservas = d.reservas;
+}
+function toast(msg){
+  const slot = document.getElementById('toastSlot');
+  slot.innerHTML = '<div class="toast" role="status">'+esc(msg)+'</div>';
+  clearTimeout(toast.t); toast.t = setTimeout(()=>{ slot.innerHTML=''; }, 3000);
+}
+function go(v){ ui.view = v; ui.confirm = null; render(); window.scrollTo(0,0); }
+function counts(){
+  let pago=0,res=0; Object.values(S.mapa).forEach(x => x==='pago' ? pago++ : res++);
+  return { pago, res, livre:S.config.total - pago - res };
+}
+
+/* ---------- Pix (BR Code estático com valor) ---------- */
+function tlv(id, v){ return id + String(v.length).padStart(2,'0') + v; }
+function limpa(s, max){ return String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,'').replace(/\s+/g,' ').trim().slice(0,max).trim(); }
+function crc16(s){
+  let crc = 0xFFFF;
+  for(let i=0;i<s.length;i++){ crc ^= s.charCodeAt(i) << 8; for(let j=0;j<8;j++){ crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1); crc &= 0xFFFF; } }
+  return crc.toString(16).toUpperCase().padStart(4,'0');
+}
+function pixCopiaCola(valor, txid){
+  const c = S.config;
+  let chave = String(c.pix_chave).trim();
+  if(/^[\d.\-\/ ]+$/.test(chave) && digits(chave).length===11 && !chave.startsWith('+')) chave = digits(chave);
+  let p = tlv('00','01') + tlv('26', tlv('00','br.gov.bcb.pix') + tlv('01', chave)) + tlv('52','0000') + tlv('53','986')
+    + tlv('54', valor.toFixed(2)) + tlv('58','BR') + tlv('59', limpa(c.pix_nome,25)) + tlv('60', limpa(c.pix_cidade,15))
+    + tlv('62', tlv('05', txid)) + '6304';
+  return p + crc16(p);
+}
+
+/* ---------- regras ---------- */
+function regrasItens(){
+  const c = S.config;
+  const opcoes = c.itens.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+  const listaOp = opcoes.length>1 ? opcoes.slice(0,-1).join(', ')+' ou '+opcoes.at(-1) : (opcoes[0]||'');
+  let mod;
+  if(c.modalidade==='vivo') mod = '<strong>Sorteio ao vivo.</strong> O número é sorteado entre os números pagos, com transmissão, e o resultado aparece na hora na aba Resultado.';
+  else if(c.modalidade==='loteria') mod = '<strong>Loteria Federal.</strong> '+(c.total===100?'Vale o número formado pelos dois últimos dígitos':'Vale o resto da divisão por '+c.total)+' do 1º prêmio da extração da data do sorteio. Se esse número não tiver sido vendido, ganha o próximo número vendido acima dele.';
+  else mod = 'A forma de sorteio (ao vivo ou pela Loteria Federal) será divulgada aqui antes do sorteio.';
+  return [
+    'Cada número custa <strong>'+brl(c.preco)+'</strong>. A rifa tem '+c.total+' números, de '+pad(0)+' a '+pad(c.total-1)+'.',
+    'Ao reservar, você tem <strong>24 horas</strong> para pagar pelo Pix e enviar o comprovante pelo WhatsApp. Sem pagamento nesse prazo, a reserva é cancelada e os números voltam a ficar livres.',
+    'Só participam do sorteio os números com <strong>pagamento confirmado</strong> pela administração. Você acompanha a situação dos seus números na aba Meus números.',
+    'Data do sorteio: <strong>'+(c.data?esc(c.data):'a definir')+'</strong>.',
+    'Modalidade: '+mod,
+    'O resultado é publicado na aba Resultado, e quem ganhar é avisado pelo WhatsApp informado na reserva.',
+    'Prêmio: '+esc(c.premio)+(listaOp?', com uma opção à escolha de quem ganhar: '+esc(listaOp)+'.':'.')+(c.condicoes.trim()?' '+esc(c.condicoes.trim()):''),
+    'Dúvidas: WhatsApp <strong style="user-select:all">'+fmtZap(c.zap)+'</strong>.'
+  ];
+}
+const OL = '<ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px">';
+function regrasHtml(){
+  const custom = (S.config.regras||'').trim();
+  if(custom){
+    const ls = custom.split('\n').map(s=>s.trim().replace(/^\d+\s*[.)-]\s*/,'')).filter(Boolean);
+    return OL+ls.map(l=>'<li>'+esc(l)+'</li>').join('')+'</ol>';
+  }
+  return OL+regrasItens().map(i=>'<li>'+i+'</li>').join('')+'</ol>';
+}
+function regrasTexto(){
+  const d = document.createElement('div');
+  return regrasItens().map((i,k)=>{ d.innerHTML=i; return (k+1)+'. '+d.textContent; }).join('\n');
+}
+
+/* ---------- telas públicas ---------- */
+function vGrid(){
+  const c = S.config, k = counts();
+  const itens = c.itens.split(',').map(s=>s.trim()).filter(Boolean);
+  let cells = '';
+  for(let i=0;i<c.total;i++){
+    const x = S.mapa[i]; const lab = pad(i);
+    if(x==='pago') cells += '<button class="n pago" disabled aria-label="Número '+lab+', vendido">'+lab+'</button>';
+    else if(x) cells += '<button class="n res" disabled aria-label="Número '+lab+', reservado">'+lab+'</button>';
+    else { const s = ui.sel.has(i); cells += '<button class="n'+(s?' seu':'')+'" data-n="'+i+'" aria-pressed="'+s+'" aria-label="Número '+lab+(s?', marcado':', livre')+'">'+lab+'</button>'; }
+  }
+  return `
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <span class="eyebrow">Rifa</span>
+    <h1 style="font-size:34px;line-height:1.05">${esc(c.titulo)}</h1>
+  </div>
+  <section class="card">
+    <span class="eyebrow" style="color:var(--accent-soft)">Prêmio</span>
+    <p style="font-family:var(--display);font-size:22px;line-height:1.2;font-weight:700">${esc(c.premio)}</p>
+    ${itens.length>1?'<span style="font-size:14px;color:var(--fg-2)">Quem ganhar escolhe uma opção:</span>':''}
+    ${itens.length?'<div class="chips" style="align-items:center">'+itens.map(t=>'<span class="chip">'+esc(t)+'</span>').join('<span style="font-size:13px;color:var(--muted)">ou</span>')+'</div>':''}
+    <div class="prize-acts">
+      <button class="btn ghost" data-act="verFoto">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>
+        Ver fotos do prêmio
+      </button>
+      ${c.descricao.trim()?`<details class="more" id="maisPremio" ${ui.maisAberto?'open':''}>
+        <summary>Saiba mais sobre o prêmio<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="txt">${esc(c.descricao.trim())}</div>
+      </details>`:''}
+      <details class="more" id="regras" ${ui.regrasAberto?'open':''}>
+        <summary>Regras do sorteio<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="txt" style="white-space:normal">${regrasHtml()}</div>
+      </details>
+    </div>
+  </section>
+  <div class="stats">
+    <div class="stat"><span>Cada número</span><strong>${brl(c.preco).replace(',00','')}</strong></div>
+    <div class="stat"><span>Disponíveis</span><strong>${k.livre} de ${c.total}</strong></div>
+    <div class="stat"><span>Sorteio</span><strong>${c.data?esc(c.data):'A definir'}</strong></div>
+  </div>
+  ${S.sorteio?'<div class="notice ok">O sorteio já foi realizado. <button class="link" data-go="resultado" style="padding:0;min-height:0">Ver resultado</button></div>':''}
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+      <h2 style="font-size:20px">Escolha seus números</h2><span style="font-size:13px;color:var(--muted)">toque para marcar</span>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--surface-2);border:1px solid var(--line-strong)"></i>Livre</span>
+      <span><i style="background:var(--accent)"></i>Seu</span>
+      <span><i style="background:var(--warn)"></i>Reservado</span>
+      <span><i style="background:var(--sold-bg);border:1px dashed #4A465E"></i>Vendido</span>
+    </div>
+    <div class="grid">${cells}</div>
+  </section>`;
+}
+function barGrid(){
+  const n = ui.sel.size;
+  return `<div class="bar"><div class="bar-in">
+    <div class="sum"><span>${n===0?'Nenhum número marcado':n===1?'1 número marcado':n+' números marcados'}</span><strong>${brl(n*S.config.preco)}</strong></div>
+    <button class="btn" id="continuar" ${n===0||S.sorteio?'disabled':''}>Continuar</button>
+  </div></div>`;
+}
+
+function vReserva(){
+  const nums = [...ui.sel].sort((a,b)=>a-b);
+  if(!nums.length) return vGrid();
+  const e = ui.formErr;
+  return `
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="btn plain sm" data-go="grid">← Voltar</button>
+    <span style="font-size:14px;color:var(--muted)">Passo 2 de 3</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <h1 style="font-size:28px">Reservar números</h1>
+    <p style="color:var(--fg-2)">Informe seus dados para a administração saber de quem é cada número.</p>
+  </div>
+  <section class="card">
+    <span style="font-size:13px;font-weight:600;color:var(--fg-2)">Seus números</span>
+    <div class="chips">${nums.map(n=>'<span class="mini seu">'+pad(n)+'</span>').join('')}</div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:12px">
+      <span style="font-size:14px;color:var(--fg-2)">${nums.length} × ${brl(S.config.preco)}</span>
+      <strong style="font-size:22px">${brl(nums.length*S.config.preco)}</strong>
+    </div>
+  </section>
+  <form id="fRes" novalidate style="display:flex;flex-direction:column;gap:16px">
+    <div class="field">
+      <label for="nome">Nome completo</label>
+      <input id="nome" autocomplete="name" placeholder="Como você quer ser identificado" value="${esc(ui.draftNome||'')}">
+      ${e.nome?'<span class="err">'+esc(e.nome)+'</span>':''}
+    </div>
+    <div class="field">
+      <label for="zap">WhatsApp</label>
+      <input id="zap" type="tel" inputmode="numeric" autocomplete="tel" placeholder="(98) 90000-0000" value="${esc(ui.draftZap||'')}">
+      ${e.zap?'<span class="err">'+esc(e.zap)+'</span>':'<span class="hint">Usado para confirmar o pagamento e avisar o resultado.</span>'}
+    </div>
+    <div class="notice"><span>A reserva vale por <strong>24 horas</strong>. Sem o pagamento nesse prazo, os números voltam a ficar livres.</span></div>
+    <button class="btn full" type="submit" ${ui.busy?'disabled':''}>${ui.busy?'Reservando…':'Reservar e pagar com Pix'}</button>
+  </form>`;
+}
+
+function vPix(){
+  const r = ui.lastRes; if(!r) return vGrid();
+  const c = S.config;
+  const nums = r.nums.map(pad);
+  const lista = nums.length===1 ? 'Número '+nums[0]+' reservado' : 'Números '+nums.slice(0,-1).join(', ')+' e '+nums.at(-1)+' reservados';
+  const codigo = pixCopiaCola(r.total, 'RIFA'+String(r.id).padStart(4,'0'));
+  ui.pixCodigo = codigo;
+  const msg = 'Olá! Segue o comprovante da rifa da formatura. Nome: '+r.nome+'. Números: '+nums.join(', ')+'. Valor: '+brl(r.total)+'.';
+  return `
+  <span style="font-size:14px;color:var(--muted)">Passo 3 de 3</span>
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px">
+    <h1 style="font-size:26px">${lista}</h1>
+    <p style="color:var(--fg-2)">Faça o Pix até <strong style="color:var(--warn)">${fmtDate(r.criado+24*H)}</strong> para garantir sua participação.</p>
+  </div>
+  <section class="card" style="align-items:stretch">
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:14px;color:var(--fg-2)">Valor a pagar</span><strong style="font-size:26px">${brl(r.total)}</strong></div>
+    <div style="display:flex;justify-content:center"><div id="qr" style="background:#fff;padding:12px;border-radius:14px;line-height:0" role="img" aria-label="QR Code do Pix com o valor de ${brl(r.total)}"></div></div>
+    <p style="font-size:13px;color:var(--fg-2);text-align:center">No app do banco, escolha <strong>Pix → Ler QR Code</strong> ou use o código abaixo em <strong>Pix copia e cola</strong>. O valor já vem preenchido.</p>
+    <button class="btn full" id="copyPix">Copiar código Pix copia e cola</button>
+    <div style="font-size:12px;color:var(--muted);word-break:break-all;user-select:all;background:var(--surface);border-radius:10px;padding:10px" id="pixCode">${esc(codigo)}</div>
+    <span style="font-size:13px;color:var(--fg-2)">Recebedora: <strong>${esc(c.pix_nome)}</strong></span>
+  </section>
+  <ol style="margin:0;padding-left:20px;font-size:14px;line-height:1.55;color:var(--fg-2);display:flex;flex-direction:column;gap:6px">
+    <li>Pague pelo app do seu banco.</li>
+    <li>Envie o comprovante para o WhatsApp <strong style="user-select:all">${fmtZap(c.zap)}</strong>.</li>
+    <li>Quando o pagamento for confirmado, seus números aparecem como pagos em Meus números.</li>
+  </ol>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <a class="btn ghost full" style="text-decoration:none" href="https://wa.me/55${digits(c.zap)}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Enviar comprovante no WhatsApp</a>
+    <button class="btn plain full" data-go="grid">Voltar aos números</button>
+  </div>`;
+}
+
+function vMeus(){
+  let res = '';
+  if(ui.lookupRes === 'carregando') res = '<div class="empty">Buscando…</div>';
+  else if(Array.isArray(ui.lookupRes)){
+    if(!ui.lookupRes.length) res = '<div class="empty">Nenhuma reserva encontrada para esse WhatsApp.</div>';
+    else res = '<div class="item">'+ui.lookupRes.flatMap(r=>r.nums.map(n=>{
+      const p = r.status==='pago'?'<span class="pill pago">Pago</span>':r.status==='reservado'?'<span class="pill res">Aguardando pagamento</span>':'<span class="pill late">Reserva expirada</span>';
+      return '<div class="item-h" style="align-items:center"><strong style="font-size:18px;font-variant-numeric:tabular-nums">'+pad(n)+'</strong>'+p+'</div>';
+    })).join('<div style="height:1px;background:var(--line)"></div>')+'</div>';
+  }
+  return `
+  <h1 style="font-size:28px">Meus números</h1>
+  <form id="fLook" class="field">
+    <label for="look">WhatsApp usado na reserva</label>
+    <div class="row"><input id="look" type="tel" inputmode="numeric" placeholder="(98) 90000-0000" value="${esc(ui.lookup)}" style="flex:1"><button class="btn" type="submit">Buscar</button></div>
+  </form>
+  ${res}`;
+}
+
+function vResultado(){
+  const s = S.sorteio;
+  if(!s) return `
+  <h1 style="font-size:28px">Resultado</h1>
+  <div class="draw" style="border-color:var(--line)">
+    <span class="eyebrow">Número sorteado</span>
+    <span class="big" style="color:var(--muted)">--</span>
+    <p style="color:var(--fg-2)">O sorteio ainda não foi realizado.${S.config.data?' Data prevista: '+esc(S.config.data)+'.':''}</p>
+  </div>`;
+  return `
+  <h1 style="font-size:28px">Resultado</h1>
+  <div class="draw">
+    <span class="eyebrow" style="color:var(--accent-soft)">Número sorteado</span>
+    <span class="big">${pad(s.numero)}</span>
+    <span style="font-size:18px;font-weight:600">Ganhador(a): ${esc(s.nome)}</span>
+    <span style="font-size:14px;color:var(--fg-2)">${s.metodo==='vivo'?'Sorteio ao vivo':'Loteria Federal · 1º prêmio '+esc(s.loteria)} · ${fmtDate(s.em)}</span>
+  </div>
+  ${s.regra?'<p style="font-size:14px;color:var(--fg-2)">'+esc(s.regra)+'</p>':''}`;
+}
+
+/* ---------- galeria ---------- */
+function vViewer(){
+  const c = S.config;
+  let corpo;
+  if(!ui.fotos) corpo = '<div class="viewer-img"><div class="empty">Carregando fotos…</div></div><div class="viewer-cap">';
+  else if(!ui.fotos.length) corpo = '<div class="viewer-img"><div class="empty">As fotos do prêmio ainda não foram adicionadas.</div></div><div class="viewer-cap">';
+  else {
+    const fs = ui.fotos, i = ((ui.fotoIdx%fs.length)+fs.length)%fs.length, f = fs[i], src = ui.fotoCache[f.id];
+    if(!src) carregarFoto(f.id);
+    corpo = `<div class="viewer-img">${src?'<img src="'+src+'" alt="Foto do prêmio: '+esc(f.cap)+'">':'<div class="empty">Carregando foto…</div>'}</div>
+      <div class="viewer-cap">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+          <button class="btn sm plain" data-act="fotoAnt" aria-label="Foto anterior">‹</button>
+          <div style="display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0">
+            <strong style="font-family:var(--display);font-size:20px">${esc(f.cap)}</strong>
+            <span style="font-size:13px;color:var(--muted)">Foto ${i+1} de ${fs.length}</span>
+          </div>
+          <button class="btn sm plain" data-act="fotoProx" aria-label="Próxima foto">›</button>
+        </div>`;
+  }
+  return `<div class="viewer" role="dialog" aria-modal="true" aria-label="Fotos do prêmio">
+    <div class="viewer-top">
+      <button class="btn sm plain" data-act="fecharFoto" id="fecharFoto">← Voltar à rifa</button>
+      <span class="eyebrow">Prêmio</span>
+    </div>
+    ${corpo}
+      <p style="font-size:14px;color:var(--fg-2);text-align:center">${esc(c.premio)}: quem ganhar escolhe uma das opções.</p>
+      <button class="btn full" data-act="fecharFoto">Escolher meus números</button>
+    </div>
+  </div>`;
+}
+function carregarFoto(id){
+  if(ui.fotoCache[id] !== undefined) return;
+  ui.fotoCache[id] = null;
+  call('getFoto', id).then(src => { ui.fotoCache[id] = src; if(ui.foto) render(); }).catch(()=>{ delete ui.fotoCache[id]; });
+}
+
+/* ---------- administração ---------- */
+function vLogin(){
+  return `
+  <h1 style="font-size:28px">Administração</h1>
+  <p style="color:var(--fg-2)">Área de quem organiza a rifa.</p>
+  <form id="fLogin" style="display:flex;flex-direction:column;gap:14px">
+    <div class="field">
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" autocomplete="current-password">
+      ${ui.loginErr?'<span class="err">Senha incorreta. Tente de novo.</span>':''}
+    </div>
+    <button class="btn full" type="submit" ${ui.busy?'disabled':''}>${ui.busy?'Entrando…':'Entrar'}</button>
+  </form>`;
+}
+
+function resItem(r){
+  const restante = 24*H - (now()-r.criado);
+  const hrs = Math.max(0, Math.ceil(restante/H));
+  const pill = r.status==='pago' ? '<span class="pill pago">Pago'+(r.origem==='presencial'?' · presencial':'')+'</span>' : '<span class="pill '+(hrs<=3?'late':'res')+'">vence em '+hrs+'h</span>';
+  const total = brl(r.nums.length*S.config.preco);
+  let acts = '';
+  if(r.status==='reservado'){
+    if(ui.confirm==='lib'+r.id) acts = '<div class="actions"><span style="flex-basis:100%;font-size:14px;color:var(--danger)">Liberar esses números para venda?</span><button class="btn sm plain" data-act="cancel">Manter</button><button class="btn sm" style="background:var(--danger);color:#2A0B07" data-act="liberar" data-id="'+r.id+'">Liberar</button></div>';
+    else acts = '<div class="actions"><button class="btn sm ok" data-act="pagar" data-id="'+r.id+'">Confirmar pagamento</button><button class="btn sm plain" data-act="askLib" data-id="'+r.id+'">Liberar</button>'+(r.zap?'<a class="btn sm plain" style="text-decoration:none;flex:0 0 auto" href="https://wa.me/55'+digits(r.zap)+'" target="_blank" rel="noopener">WhatsApp</a>':'')+'</div>';
+  } else if(r.status==='pago' && !S.sorteio){
+    if(ui.confirm==='desf'+r.id) acts = '<div class="actions"><span style="flex-basis:100%;font-size:14px;color:var(--danger)">Voltar para "aguardando pagamento"?</span><button class="btn sm plain" data-act="cancel">Não</button><button class="btn sm plain" data-act="desfazer" data-id="'+r.id+'">Sim, desfazer</button></div>';
+    else acts = '<div class="actions"><button class="btn sm plain" data-act="askDesf" data-id="'+r.id+'">Desfazer confirmação</button></div>';
+  }
+  return `<article class="item">
+    <div class="item-h"><div><strong>${esc(r.nome)}</strong><span class="sub" style="user-select:all">${r.zap?fmtZap(r.zap)+' · ':''}${total}</span></div>${pill}</div>
+    <div class="chips">${r.nums.map(n=>'<span class="mini'+(r.status==='pago'?' pago':'')+'">'+pad(n)+'</span>').join('')}</div>
+    ${acts}
+  </article>`;
+}
+
+function vAdmin(){
+  if(!ui.admin) return vLogin();
+  const c = S.config, k = counts();
+  const pend = S.reservas.filter(r=>r.status==='reservado').sort((a,b)=>a.criado-b.criado);
+  const pagos = S.reservas.filter(r=>r.status==='pago').sort((a,b)=>(b.pagoEm||0)-(a.pagoEm||0));
+  const pctP = k.pago/c.total*100, pctR = k.res/c.total*100;
+  return `
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+    <div><span class="eyebrow" style="color:var(--warn)">Área restrita</span><h1 style="font-size:26px">Painel da rifa</h1></div>
+    <div class="actions" style="flex:0 0 auto"><button class="btn sm plain" data-act="atualizar">Atualizar</button><button class="btn sm plain" data-act="sair">Sair</button></div>
+  </header>
+  <section class="kpis">
+    <div class="kpi"><span>Arrecadado</span><strong>${brl(k.pago*c.preco).replace(',00','')}</strong><small style="color:var(--ok)">${k.pago} números pagos</small></div>
+    <div class="kpi"><span>A confirmar</span><strong>${brl(k.res*c.preco).replace(',00','')}</strong><small style="color:var(--warn)">${k.res} reservados</small></div>
+    <div class="meter">
+      <div class="lab"><span>Ocupação</span><span><strong style="color:var(--fg)">${k.pago+k.res}</strong> de ${c.total} · ${k.livre} livres</span></div>
+      <div class="track" role="img" aria-label="${k.pago} pagos, ${k.res} reservados, ${k.livre} livres"><span style="width:${pctP}%;background:var(--ok)"></span><span style="width:${pctR}%;background:var(--warn)"></span></div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="font-size:19px">Aguardando pagamento</h2><span style="font-size:13px;color:var(--muted)">mais antigas primeiro</span></div>
+    ${pend.length?pend.map(resItem).join(''):'<div class="empty">Nenhuma reserva pendente.</div>'}
+  </section>
+
+  ${S.sorteio?'':`<section class="card">
+    <h2 style="font-size:19px">Registrar venda</h2>
+    <p style="font-size:14px;color:var(--fg-2)">Para números vendidos pessoalmente ou pagos em dinheiro. Entram direto como pagos.</p>
+    <form id="fVenda" style="display:flex;flex-direction:column;gap:12px">
+      <div class="field"><label for="vNums">Números</label><input id="vNums" inputmode="numeric" placeholder="Ex.: 07, 15, 42" value="${esc(ui.vNums||'')}"></div>
+      <div class="field"><label for="vNome">Nome do comprador</label><input id="vNome" value="${esc(ui.vNome||'')}"></div>
+      <div class="field"><label for="vZap">WhatsApp (opcional)</label><input id="vZap" type="tel" inputmode="numeric" placeholder="(98) 90000-0000" value="${esc(ui.vZap||'')}"></div>
+      <button class="btn ok full" type="submit" ${ui.busy?'disabled':''}>Registrar como pago</button>
+    </form>
+  </section>`}
+
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <h2 style="font-size:19px">Pagos (${pagos.length})</h2>
+    ${pagos.length?pagos.map(resItem).join(''):'<div class="empty">Nenhum pagamento confirmado ainda.</div>'}
+  </section>
+
+  ${vSorteioAdm()}
+
+  <section style="display:flex;flex-direction:column;gap:10px">
+    <h2 style="font-size:19px">Configurações</h2>
+    <form id="fCfg" class="set">
+      <div class="field"><label for="cTotal">Quantidade de números</label>
+        <div class="row"><input id="cTotal" type="number" inputmode="numeric" min="${c.total}" step="10" value="${c.total}" style="flex:1"><button class="btn sm plain" type="button" data-act="ampliar">Ampliar</button></div>
+        <span class="hint">Só pode aumentar. ${c.total===100?'Com 100 números (00 a 99), a Loteria Federal usa os dois últimos dígitos.':'Com '+c.total+' números, a regra da Loteria passa a ser o resto da divisão por '+c.total+'.'}</span>
+      </div>
+      <div class="field"><label for="cPreco">Valor por número (R$)</label><input id="cPreco" type="number" inputmode="decimal" min="1" step="1" value="${c.preco}"></div>
+      <div class="field"><label for="cData">Data do sorteio</label><input id="cData" placeholder="Ex.: 20/12 às 19h" value="${esc(c.data)}"></div>
+      <div class="field"><label for="cMod">Modalidade do sorteio</label>
+        <select id="cMod">
+          <option value="" ${c.modalidade===''?'selected':''}>A definir</option>
+          <option value="vivo" ${c.modalidade==='vivo'?'selected':''}>Ao vivo</option>
+          <option value="loteria" ${c.modalidade==='loteria'?'selected':''}>Loteria Federal</option>
+        </select>
+      </div>
+      <div class="field"><label for="cPremio">Prêmio</label><input id="cPremio" value="${esc(c.premio)}"></div>
+      <div class="field"><label for="cItens">Opções do prêmio, o ganhador escolhe uma (separe por vírgula)</label><input id="cItens" value="${esc(c.itens)}"></div>
+      <div class="field"><label for="cDesc">Descrição do prêmio</label><textarea id="cDesc" class="ta">${esc(c.descricao)}</textarea><span class="hint">Aparece em "Saiba mais sobre o prêmio". Em branco, o botão some.</span></div>
+      <div class="field"><label for="cCond">Condições de uso do prêmio</label><textarea id="cCond" class="ta" style="min-height:90px" placeholder="Ex.: prazo para usar e como agendar com a FestVal">${esc(c.condicoes)}</textarea><span class="hint">Entra no item "Prêmio" das regras.</span></div>
+      <div class="field"><label for="cRegras">Texto das regras do sorteio</label>
+        <span class="pill ${c.regras.trim()?'res':'pago'}" style="align-self:flex-start">${c.regras.trim()?'Texto editado por vocês':'Texto automático'}</span>
+        <textarea id="cRegras" class="ta" style="min-height:300px">${esc(c.regras.trim()?c.regras:regrasTexto())}</textarea>
+        <span class="hint">Uma regra por linha. ${c.regras.trim()?'Como foi editado, não se atualiza mais sozinho com data, modalidade e valor.':'Enquanto não for editado, se atualiza sozinho com data, modalidade e valor.'}</span>
+        ${c.regras.trim()?(ui.confirm==='restRegras'
+          ?'<div class="actions"><span style="flex-basis:100%;font-size:14px;color:var(--danger)">Descartar o texto editado e voltar ao automático?</span><button class="btn sm plain" type="button" data-act="cancel">Manter o meu</button><button class="btn sm" type="button" data-act="restRegras">Voltar ao automático</button></div>'
+          :'<button class="btn sm plain" type="button" data-act="askRestRegras">Voltar ao texto automático</button>'):''}
+      </div>
+      <div class="field"><label for="cPix">Chave Pix</label><input id="cPix" value="${esc(c.pix_chave)}"><span class="hint">CPF só com números; celular no formato +5598900000000.</span></div>
+      <div class="field"><label for="cPixNome">Nome de quem recebe o Pix</label><input id="cPixNome" value="${esc(c.pix_nome)}"></div>
+      <div class="field"><label for="cPixCid">Cidade de quem recebe</label><input id="cPixCid" value="${esc(c.pix_cidade)}"></div>
+      <div class="field"><label for="cZap">WhatsApp para comprovantes e dúvidas</label><input id="cZap" type="tel" inputmode="numeric" value="${esc(fmtZap(c.zap))}"></div>
+      <div><button class="btn full" type="submit" ${ui.busy?'disabled':''}>Salvar configurações</button></div>
+    </form>
+    <span class="hint" style="font-size:13px;color:var(--muted)">Fotos do prêmio: adicione ou troque imagens na pasta "Fotos do prêmio" do Google Drive. A ordem segue o número no início do nome do arquivo.</span>
+  </section>`;
+}
+
+function vSorteioAdm(){
+  const s = S.sorteio, k = counts();
+  if(s) return `<section class="draw">
+    <span class="eyebrow" style="color:var(--accent-soft)">Sorteio realizado</span>
+    <span class="big">${pad(s.numero)}</span>
+    <span style="font-size:18px;font-weight:600">${esc(s.nome)}</span>
+    ${s.zap?'<a class="btn sm ghost" style="text-decoration:none" href="https://wa.me/55'+digits(s.zap)+'" target="_blank" rel="noopener">Avisar no WhatsApp '+fmtZap(s.zap)+'</a>':''}
+    ${s.regra?'<p style="font-size:14px;color:var(--fg-2)">'+esc(s.regra)+'</p>':''}
+    ${ui.confirm==='refazer'?'<div class="notice" style="width:100%">Apague só se houve erro. O resultado sai da página pública.</div><div class="actions" style="width:100%"><button class="btn sm plain" data-act="cancel">Manter resultado</button><button class="btn sm" data-act="apagarSorteio">Apagar resultado</button></div>':'<button class="link" data-act="askRefazer">Apagar resultado</button>'}
+  </section>`;
+  if(ui.rolling!==null) return `<section class="draw"><span class="eyebrow">Sorteando…</span><span class="big">${pad(ui.rolling)}</span></section>`;
+  const vivo = ui.metodo==='vivo';
+  return `<section class="card" style="border-color:var(--accent)">
+    <h2 style="font-size:19px">Sorteio</h2>
+    <div class="seg" role="group" aria-label="Forma de sorteio">
+      <button type="button" data-act="metodo" data-m="vivo" aria-pressed="${vivo}">Ao vivo</button>
+      <button type="button" data-act="metodo" data-m="loteria" aria-pressed="${!vivo}">Loteria Federal</button>
+    </div>
+    ${vivo?`
+      <p style="font-size:14px;color:var(--fg-2)">Sorteia entre os ${k.pago} números pagos. O resultado aparece na hora na página pública.</p>
+      ${ui.confirm==='sortear'
+        ?'<div class="notice">Isso encerra a venda. Reservas não pagas ficam fora do sorteio.</div><div class="actions"><button class="btn plain" data-act="cancel">Cancelar</button><button class="btn" data-act="sortear">Sortear agora</button></div>'
+        :'<button class="btn full" data-act="askSortear" '+(k.pago?'':'disabled')+'>Sortear ao vivo</button>'}
+    `:`
+      <p style="font-size:14px;color:var(--fg-2)">Digite o 1º prêmio da extração. ${S.config.total===100?'Os dois últimos dígitos dão o número sorteado.':'O resto da divisão por '+S.config.total+' dá o número sorteado.'} Se ele não tiver sido vendido, vale o próximo número vendido acima.</p>
+      <form id="fLot" class="row"><input id="lot" inputmode="numeric" placeholder="Ex.: 48231" value="${esc(ui.loteria)}" aria-label="1º prêmio da Loteria Federal" style="flex:1;height:52px;border-radius:14px;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);padding:0 14px"><button class="btn" type="submit" ${k.pago&&!ui.busy?'':'disabled'}>Apurar</button></form>
+    `}
+  </section>`;
+}
+
+/* ---------- render ---------- */
+function render(){
+  if(!S.config) return;
+  const v = ui.view;
+  document.querySelectorAll('.tab').forEach(t => {
+    const g = t.dataset.go;
+    const on = g===v || (g==='grid' && (v==='reserva'||v==='pix'));
+    on ? t.setAttribute('aria-current','page') : t.removeAttribute('aria-current');
+  });
+  document.getElementById('app').innerHTML = ({grid:vGrid,reserva:vReserva,pix:vPix,meus:vMeus,resultado:vResultado,admin:vAdmin}[v]||vGrid)();
+  document.getElementById('barSlot').innerHTML = v==='grid' ? barGrid() : '';
+  document.getElementById('viewerSlot').innerHTML = ui.foto ? vViewer() : '';
+  document.body.style.overflow = ui.foto ? 'hidden' : '';
+  [...ui.sel].forEach(n => { if(S.mapa[n] || n>=S.config.total) ui.sel.delete(n); });
+  if(v==='pix' && ui.pixCodigo && window.QRCode){
+    const el = document.getElementById('qr');
+    if(el) new QRCode(el, { text:ui.pixCodigo, width:220, height:220, correctLevel:QRCode.CorrectLevel.M });
+  }
+}
+
+function carregar(){
+  return call('getPublico').then(d => { aplicar(d); render(); })
+    .catch(e => { document.getElementById('app').innerHTML = '<div class="empty">Não foi possível carregar a rifa. Verifique a internet e recarregue a página.</div>'; });
+}
+function carregarAdmin(){
+  return call('getAdmin', ui.senha).then(d => { aplicar(d); render(); }).catch(falhaAdmin);
+}
+function falhaAdmin(e){
+  ui.busy=false;
+  const m = msgErro(e);
+  if(m==='SENHA'){ ui.admin=false; ui.loginErr=true; render(); return; }
+  toast(m); render();
+}
+function adminAcao(fn, ...args){
+  ui.busy = true; render();
+  return call(fn, ui.senha, ...args).then(d => { ui.busy=false; ui.confirm=null; aplicar(d); render(); return d; }).catch(e => { falhaAdmin(e); throw e; });
+}
+
+/* ---------- eventos ---------- */
+document.addEventListener('click', e => {
+  const t = e.target.closest('button,a'); if(!t) return;
+  if(t.dataset.go){ go(t.dataset.go); if(t.dataset.go==='grid'||t.dataset.go==='resultado') carregar(); return; }
+  if(t.dataset.n!==undefined){ const n=+t.dataset.n; ui.sel.has(n)?ui.sel.delete(n):ui.sel.add(n); render(); return; }
+  if(t.id==='continuar'){ ui.formErr={}; go('reserva'); return; }
+  if(t.id==='copyPix'){
+    const fallback = () => { const r=document.createRange(); r.selectNodeContents(document.getElementById('pixCode')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast('Código selecionado. Copie pelo menu do celular'); };
+    try{ navigator.clipboard.writeText(ui.pixCodigo).then(()=>toast('Código Pix copiado'), fallback); }catch(err){ fallback(); }
+    return;
+  }
+  const a = t.dataset.act; if(!a) return;
+  if(a==='fotoAnt'||a==='fotoProx'){ ui.fotoIdx+=(a==='fotoProx'?1:-1); render(); return; }
+  if(a==='verFoto'){
+    ui.foto=true; ui.fotoIdx=0; ui.scrollY=window.scrollY; render();
+    if(!ui.fotos) call('getFotos').then(f=>{ ui.fotos=f; render(); }).catch(()=>{ ui.fotos=[]; render(); });
+    return;
+  }
+  if(a==='fecharFoto'){ ui.foto=false; render(); window.scrollTo(0, ui.scrollY||0); return; }
+  switch(a){
+    case 'cancel': ui.confirm=null; render(); break;
+    case 'sair': ui.admin=false; ui.senha=''; S.reservas=[]; render(); break;
+    case 'atualizar': carregarAdmin().then(()=>toast('Dados atualizados')); break;
+    case 'askLib': ui.confirm='lib'+t.dataset.id; render(); break;
+    case 'askDesf': ui.confirm='desf'+t.dataset.id; render(); break;
+    case 'pagar': adminAcao('mudarStatus', +t.dataset.id, 'pagar').then(()=>toast('Pagamento confirmado')).catch(()=>{}); break;
+    case 'liberar': adminAcao('mudarStatus', +t.dataset.id, 'liberar').then(()=>toast('Números liberados para venda')).catch(()=>{}); break;
+    case 'desfazer': adminAcao('mudarStatus', +t.dataset.id, 'desfazer').catch(()=>{}); break;
+    case 'metodo': ui.metodo=t.dataset.m; ui.confirm=null; render(); break;
+    case 'askSortear': ui.confirm='sortear'; render(); break;
+    case 'sortear': sortearVivo(); break;
+    case 'askRefazer': ui.confirm='refazer'; render(); break;
+    case 'apagarSorteio': adminAcao('apagarSorteio').then(()=>toast('Resultado apagado')).catch(()=>{}); break;
+    case 'askRestRegras': ui.confirm='restRegras'; render(); break;
+    case 'restRegras': adminAcao('salvarConfig', { regras:'' }).then(()=>toast('Regras voltaram ao texto automático')).catch(()=>{}); break;
+    case 'ampliar': {
+      const v = Math.floor(+document.getElementById('cTotal').value);
+      adminAcao('ampliar', v).then(()=>toast('Rifa ampliada para '+v+' números')).catch(()=>{});
+      break;
+    }
+  }
+});
+
+document.addEventListener('input', e => {
+  const id = e.target.id;
+  if(id==='nome') ui.draftNome=e.target.value;
+  if(id==='zap') ui.draftZap=e.target.value;
+  if(id==='lot') ui.loteria=e.target.value;
+  if(id==='vNums') ui.vNums=e.target.value;
+  if(id==='vNome') ui.vNome=e.target.value;
+  if(id==='vZap') ui.vZap=e.target.value;
+});
+document.addEventListener('toggle', e => { if(e.target.id==='maisPremio') ui.maisAberto=e.target.open; if(e.target.id==='regras') ui.regrasAberto=e.target.open; }, true);
+document.addEventListener('keydown', e => {
+  if(!ui.foto) return;
+  if(e.key==='Escape'){ ui.foto=false; render(); window.scrollTo(0, ui.scrollY||0); }
+  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ ui.fotoIdx+=(e.key==='ArrowRight'?1:-1); render(); }
+});
+let toqueX = null;
+document.addEventListener('touchstart', e => { if(ui.foto && e.target.closest('.viewer-img')) toqueX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', e => {
+  if(toqueX===null) return;
+  const dx = e.changedTouches[0].clientX - toqueX; toqueX = null;
+  if(Math.abs(dx) > 50){ ui.fotoIdx+=(dx<0?1:-1); render(); }
+});
+
+document.addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target.id;
+  if(f==='fRes'){
+    const nome = (ui.draftNome||'').trim(), zap = digits(ui.draftZap||'');
+    ui.formErr = {};
+    if(nome.length<3) ui.formErr.nome='Escreva seu nome para identificar a reserva.';
+    if(zap.length<10||zap.length>11) ui.formErr.zap='Digite o WhatsApp com DDD, como (98) 90000-0000.';
+    if(Object.keys(ui.formErr).length){ render(); return; }
+    const nums = [...ui.sel].sort((a,b)=>a-b);
+    ui.busy = true; render();
+    call('reservar', nums, nome, zap).then(r => {
+      ui.busy=false; r.nome=nome; ui.lastRes=r; ui.sel.clear(); ui.draftNome=''; ui.draftZap='';
+      nums.forEach(n => S.mapa[n]='res');
+      go('pix'); carregar();
+    }).catch(err => {
+      ui.busy=false;
+      const m = msgErro(err);
+      if(m.startsWith('OCUPADO:')){
+        const t = m.slice(8).split(',').map(Number);
+        t.forEach(n=>ui.sel.delete(n));
+        toast((t.length===1?'O número '+pad(t[0])+' acabou de ser reservado':'Os números '+t.map(pad).join(', ')+' acabaram de ser reservados')+'. Escolha outro.');
+        carregar().then(()=>go('grid'));
+      } else { toast(m); render(); }
+    });
+    return;
+  }
+  if(f==='fLook'){
+    ui.lookup=document.getElementById('look').value; ui.lookupRes='carregando'; render();
+    call('consultar', ui.lookup).then(r=>{ ui.lookupRes=r; render(); }).catch(()=>{ ui.lookupRes=null; toast('Não foi possível buscar agora. Tente de novo.'); render(); });
+    return;
+  }
+  if(f==='fLogin'){
+    const senha = document.getElementById('senha').value;
+    ui.busy=true; render();
+    call('entrar', senha).then(d => { ui.busy=false; ui.senha=senha; ui.admin=true; ui.loginErr=false; aplicar(d); ui.metodo=d.config.modalidade||'vivo'; render(); }).catch(falhaAdmin);
+    return;
+  }
+  if(f==='fVenda'){
+    const nums = (ui.vNums||'').split(/[^\d]+/).filter(Boolean).map(Number);
+    adminAcao('registrarVenda', nums, ui.vNome||'', ui.vZap||'').then(()=>{ toast('Venda registrada'); ui.vNums=''; ui.vNome=''; ui.vZap=''; render(); }).catch(()=>{});
+    return;
+  }
+  if(f==='fCfg'){
+    const g = id => document.getElementById(id).value;
+    const c = S.config;
+    const autoAntes = regrasTexto().trim(), regrasNovas = g('cRegras').trim();
+    const novo = {
+      preco: g('cPreco'), data: g('cData').trim(), modalidade: g('cMod'), premio: g('cPremio').trim()||c.premio,
+      itens: g('cItens'), descricao: g('cDesc'), condicoes: g('cCond'),
+      regras: (c.regras.trim()==='' && regrasNovas===autoAntes) ? '' : regrasNovas,
+      pix_chave: g('cPix').trim(), pix_nome: g('cPixNome').trim(), pix_cidade: g('cPixCid').trim(), zap: digits(g('cZap'))
+    };
+    adminAcao('salvarConfig', novo).then(()=>{ if(novo.modalidade) ui.metodo=novo.modalidade; toast('Configurações salvas'); render(); }).catch(()=>{});
+    return;
+  }
+  if(f==='fLot'){
+    adminAcao('apurarLoteria', ui.loteria).then(()=>toast('Resultado publicado')).catch(()=>{});
+  }
+});
+
+function sortearVivo(){
+  const pool = Object.keys(S.mapa).filter(n=>S.mapa[n]==='pago').map(Number);
+  ui.confirm=null; ui.rolling = pool[0] ?? 0; render();
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let rolando = !reduce, resultado = null, voltas = 0, parar = false;
+  const giro = () => {
+    if(parar) return;
+    if(resultado && voltas>=25){ ui.rolling=null; aplicar(resultado); render(); toast('Número '+pad(resultado.sorteio.numero)+' sorteado'); return; }
+    voltas++; ui.rolling = pool[Math.floor(Math.random()*pool.length)]; render();
+    setTimeout(giro, 60 + voltas*6);
+  };
+  call('sortearVivo', ui.senha).then(d => { resultado = d; if(!rolando){ ui.rolling=null; aplicar(d); render(); } })
+    .catch(e => { parar=true; ui.rolling=null; falhaAdmin(e); });
+  if(rolando) giro();
+}
+
+setInterval(() => { if(ui.view==='grid' && !ui.foto && !document.hidden) carregar(); }, 30000);
+carregar();
+})();
+</script>
+
+</body>
+</html>
