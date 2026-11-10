@@ -180,6 +180,10 @@ const msgErro = e => String((e && e.message) || e).replace(/^(Exception|Error|Ex
 
 /* Endereço do robô no Google (URL do app da Web, termina em /exec) */
 const API_URL = 'https://script.google.com/macros/s/AKfycbw5ozgYKqEj_WN8V7sXSITFDalmphbWtX4MPwGPUF-NZU6E5GycqJ47StVQSargtjXvsg/exec';
+const fimMs = () => Number(S.config && S.config.fim_vendas) || 0;
+const vendasFechadas = () => !!fimMs() && now() >= fimMs();
+const fmtFim = () => { const d = new Date(fimMs()); return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})+', às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}).replace(':','h'); };
+const paraLocal = ms => { const d = new Date(ms - new Date(ms).getTimezoneOffset()*60000); return d.toISOString().slice(0,16); };
 function call(fn, ...args){
   if(window.google && google.script && google.script.run){
     return new Promise((ok, fail) => google.script.run.withSuccessHandler(ok).withFailureHandler(fail)[fn](...args));
@@ -228,12 +232,13 @@ function regrasItens(){
   const listaOp = opcoes.length>1 ? opcoes.slice(0,-1).join(', ')+' ou '+opcoes.at(-1) : (opcoes[0]||'');
   let mod;
   if(c.modalidade==='vivo') mod = '<strong>Sorteio ao vivo.</strong> O número é sorteado entre os números pagos, com transmissão, e o resultado aparece na hora na aba Resultado.';
-  else if(c.modalidade==='loteria') mod = '<strong>Loteria Federal.</strong> '+(c.total===100?'Vale o número formado pelos dois últimos dígitos':'Vale o resto da divisão por '+c.total)+' do 1º prêmio da extração da data do sorteio. Se esse número não tiver sido vendido, ganha o próximo número vendido acima dele.';
+  else if(c.modalidade==='loteria') mod = '<strong>Loteria Federal.</strong> '+(c.total===100?'Vale o número formado pelos dois últimos dígitos':'Vale o resto da divisão por '+c.total)+' do 1º prêmio da extração da data do sorteio. Se esse número não tiver sido vendido, ganha o próximo número vendido acima dele. Se a extração for adiada pela CAIXA, vale o resultado da próxima extração realizada.';
   else mod = 'A forma de sorteio (ao vivo ou pela Loteria Federal) será divulgada aqui antes do sorteio.';
   return [
     'Cada número custa <strong>'+brl(c.preco)+'</strong>. A rifa tem '+c.total+' números, de '+pad(0)+' a '+pad(c.total-1)+'.',
     'Ao reservar, você tem <strong>24 horas</strong> para pagar pelo Pix e enviar o comprovante pelo WhatsApp. Sem pagamento nesse prazo, a reserva é cancelada e os números voltam a ficar livres.',
     'Só participam do sorteio os números com <strong>pagamento confirmado</strong> pela administração. Você acompanha a situação dos seus números na aba Meus números.',
+    ...(fimMs() ? ['As vendas se encerram em <strong>'+fmtFim()+'</strong>. Depois desse horário, não é possível reservar números, e só concorrem os números com pagamento confirmado.'] : []),
     'Data do sorteio: <strong>'+(c.data?esc(c.data):'a definir')+'</strong>.',
     'Modalidade: '+mod,
     'O resultado é publicado na aba Resultado, e quem ganhar é avisado pelo WhatsApp informado na reserva.',
@@ -264,6 +269,7 @@ function vGrid(){
     const x = S.mapa[i]; const lab = pad(i);
     if(x==='pago') cells += '<button class="n pago" disabled aria-label="Número '+lab+', vendido">'+lab+'</button>';
     else if(x) cells += '<button class="n res" disabled aria-label="Número '+lab+', reservado">'+lab+'</button>';
+    else if(vendasFechadas()) cells += '<button class="n" disabled aria-label="Número '+lab+', não vendido">'+lab+'</button>';
     else { const s = ui.sel.has(i); cells += '<button class="n'+(s?' seu':'')+'" data-n="'+i+'" aria-pressed="'+s+'" aria-label="Número '+lab+(s?', marcado':', livre')+'">'+lab+'</button>'; }
   }
   return `
@@ -296,6 +302,8 @@ function vGrid(){
     <div class="stat"><span>Disponíveis</span><strong>${k.livre} de ${c.total}</strong></div>
     <div class="stat"><span>Sorteio</span><strong>${c.data?esc(c.data):'A definir'}</strong></div>
   </div>
+  ${!S.sorteio && vendasFechadas()?'<div class="notice">As vendas foram encerradas em '+fmtFim()+'. Acompanhe o resultado na aba Resultado.</div>':''}
+  ${!S.sorteio && !vendasFechadas() && fimMs()?'<div class="notice"><span>Vendas abertas até <strong>'+fmtFim()+'</strong>.</span></div>':''}
   ${S.sorteio?'<div class="notice ok">O sorteio já foi realizado. <button class="link" data-go="resultado" style="padding:0;min-height:0">Ver resultado</button></div>':''}
   <section style="display:flex;flex-direction:column;gap:14px">
     <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
@@ -314,7 +322,7 @@ function barGrid(){
   const n = ui.sel.size;
   return `<div class="bar"><div class="bar-in">
     <div class="sum"><span>${n===0?'Nenhum número marcado':n===1?'1 número marcado':n+' números marcados'}</span><strong>${brl(n*S.config.preco)}</strong></div>
-    <button class="btn" id="continuar" ${n===0||S.sorteio?'disabled':''}>Continuar</button>
+    <button class="btn" id="continuar" ${n===0||S.sorteio||vendasFechadas()?'disabled':''}>Continuar</button>
   </div></div>`;
 }
 
@@ -487,7 +495,8 @@ function resItem(r){
   let acts = '';
   if(r.status==='reservado'){
     if(ui.confirm==='lib'+r.id) acts = '<div class="actions"><span style="flex-basis:100%;font-size:14px;color:var(--danger)">Liberar esses números para venda?</span><button class="btn sm plain" data-act="cancel">Manter</button><button class="btn sm" style="background:var(--danger);color:#2A0B07" data-act="liberar" data-id="'+r.id+'">Liberar</button></div>';
-    else acts = '<div class="actions"><button class="btn sm ok" data-act="pagar" data-id="'+r.id+'">Confirmar pagamento</button><button class="btn sm plain" data-act="askLib" data-id="'+r.id+'">Liberar</button>'+(r.zap?'<a class="btn sm plain" style="text-decoration:none;flex:0 0 auto" href="https://wa.me/55'+digits(r.zap)+'" target="_blank" rel="noopener">WhatsApp</a>':'')+'</div>';
+    else if(ui.confirm==='pag'+r.id) acts = '<div class="field" style="gap:8px"><label for="dtPag">Data e hora do Pix (veja no comprovante)</label><input id="dtPag" type="datetime-local" value="'+paraLocal(now())+'"><div class="actions"><button class="btn sm plain" data-act="cancel">Cancelar</button><button class="btn sm ok" data-act="pagar" data-id="'+r.id+'">Confirmar pagamento</button></div></div>';
+    else acts = '<div class="actions"><button class="btn sm ok" data-act="askPag" data-id="'+r.id+'">Confirmar pagamento</button><button class="btn sm plain" data-act="askLib" data-id="'+r.id+'">Liberar</button>'+(r.zap?'<a class="btn sm plain" style="text-decoration:none;flex:0 0 auto" href="https://wa.me/55'+digits(r.zap)+'" target="_blank" rel="noopener">WhatsApp</a>':'')+'</div>';
   } else if(r.status==='pago' && !S.sorteio){
     if(ui.confirm==='desf'+r.id) acts = '<div class="actions"><span style="flex-basis:100%;font-size:14px;color:var(--danger)">Voltar para "aguardando pagamento"?</span><button class="btn sm plain" data-act="cancel">Não</button><button class="btn sm plain" data-act="desfazer" data-id="'+r.id+'">Sim, desfazer</button></div>';
     else acts = '<div class="actions"><button class="btn sm plain" data-act="askDesf" data-id="'+r.id+'">Desfazer confirmação</button></div>';
@@ -524,7 +533,7 @@ function vAdmin(){
     ${pend.length?pend.map(resItem).join(''):'<div class="empty">Nenhuma reserva pendente.</div>'}
   </section>
 
-  ${S.sorteio?'':`<section class="card">
+  ${S.sorteio||vendasFechadas()?'':`<section class="card">
     <h2 style="font-size:19px">Registrar venda</h2>
     <p style="font-size:14px;color:var(--fg-2)">Para números vendidos pessoalmente ou pagos em dinheiro. Entram direto como pagos.</p>
     <form id="fVenda" style="display:flex;flex-direction:column;gap:12px">
@@ -551,6 +560,7 @@ function vAdmin(){
       </div>
       <div class="field"><label for="cPreco">Valor por número (R$)</label><input id="cPreco" type="number" inputmode="decimal" min="1" step="1" value="${c.preco}"></div>
       <div class="field"><label for="cData">Data do sorteio</label><input id="cData" placeholder="Ex.: 20/12 às 19h" value="${esc(c.data)}"></div>
+      <div class="field"><label for="cFim">Encerrar vendas em</label><input id="cFim" type="datetime-local" value="${fimMs()?paraLocal(fimMs()):''}"><span class="hint">No horário definido, a grade de números trava sozinha. Em branco, as vendas não encerram automaticamente.</span></div>
       <div class="field"><label for="cMod">Modalidade do sorteio</label>
         <select id="cMod">
           <option value="" ${c.modalidade===''?'selected':''}>A definir</option>
@@ -673,7 +683,15 @@ document.addEventListener('click', e => {
     case 'atualizar': carregarAdmin().then(()=>toast('Dados atualizados')); break;
     case 'askLib': ui.confirm='lib'+t.dataset.id; render(); break;
     case 'askDesf': ui.confirm='desf'+t.dataset.id; render(); break;
-    case 'pagar': adminAcao('mudarStatus', +t.dataset.id, 'pagar').then(()=>toast('Pagamento confirmado')).catch(()=>{}); break;
+    case 'askPag': ui.confirm='pag'+t.dataset.id; render(); break;
+    case 'pagar': {
+      const v = (document.getElementById('dtPag')||{}).value;
+      const ms = v ? new Date(v).getTime() : now();
+      if(!(ms > 0)){ toast('Informe a data e a hora do pagamento.'); break; }
+      if(ms > now()+5*60000){ toast('A data do pagamento não pode ser no futuro.'); break; }
+      adminAcao('mudarStatus', +t.dataset.id, 'pagar', ms).then(()=>toast('Pagamento confirmado')).catch(()=>{});
+      break;
+    }
     case 'liberar': adminAcao('mudarStatus', +t.dataset.id, 'liberar').then(()=>toast('Números liberados para venda')).catch(()=>{}); break;
     case 'desfazer': adminAcao('mudarStatus', +t.dataset.id, 'desfazer').catch(()=>{}); break;
     case 'metodo': ui.metodo=t.dataset.m; ui.confirm=null; render(); break;
@@ -723,6 +741,7 @@ document.addEventListener('submit', e => {
     if(nome.length<3) ui.formErr.nome='Escreva seu nome para identificar a reserva.';
     if(zap.length<10||zap.length>11) ui.formErr.zap='Digite o WhatsApp com DDD, como (98) 90000-0000.';
     if(Object.keys(ui.formErr).length){ render(); return; }
+    if(vendasFechadas()){ toast('As vendas foram encerradas.'); go('grid'); return; }
     const nums = [...ui.sel].sort((a,b)=>a-b);
     ui.busy = true; render();
     call('reservar', nums, nome, zap).then(r => {
@@ -762,7 +781,7 @@ document.addEventListener('submit', e => {
     const c = S.config;
     const autoAntes = regrasTexto().trim(), regrasNovas = g('cRegras').trim();
     const novo = {
-      preco: g('cPreco'), data: g('cData').trim(), modalidade: g('cMod'), premio: g('cPremio').trim()||c.premio,
+      preco: g('cPreco'), data: g('cData').trim(), modalidade: g('cMod'), fim_vendas: g('cFim') ? String(new Date(g('cFim')).getTime()) : '', premio: g('cPremio').trim()||c.premio,
       itens: g('cItens'), descricao: g('cDesc'), condicoes: g('cCond'),
       regras: (c.regras.trim()==='' && regrasNovas===autoAntes) ? '' : regrasNovas,
       pix_chave: g('cPix').trim(), pix_nome: g('cPixNome').trim(), pix_cidade: g('cPixCid').trim(), zap: digits(g('cZap'))
